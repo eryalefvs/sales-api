@@ -1,6 +1,7 @@
 import AppError from "@shared/errors/AppError";
 import { ProductRepository } from "../typeorm/repositories/ProductRepository";
 import Product from "@modules/products/typeorm/entities/Product"
+import redisCache from "@shared/cache/RedisCache";
 
 interface IRequest {
   id: string;
@@ -29,6 +30,8 @@ class UpdateProductService {
     if(productExists && name != product.name) {
       throw new AppError("There is already one product with this name")
     }
+
+    await redisCache.invalidate("api-vendas-PRODUCT_LIST");
 
     product.name = name;
     product.price = price;
