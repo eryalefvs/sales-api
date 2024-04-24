@@ -1,6 +1,6 @@
 import { threadId } from "worker_threads";
-import Customers from "../typeorm/entities/Customers";
-import { CustomersRepository } from "../typeorm/repositories/CustomersRepository";
+import Customers from "../infra/typeorm/entities/Customers";
+import { CustomersRepository } from "../infra/typeorm/repositories/CustomersRepository";
 import AppError from "@shared/errors/AppError";
 
 interface IRequest {

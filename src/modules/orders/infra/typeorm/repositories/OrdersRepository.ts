@@ -1,6 +1,6 @@
 import { dataSource } from "@shared/typeorm/index";
 import Order from "../entities/Order";
-import Customers from "@modules/customers/typeorm/entities/Customers";
+import Customers from "@modules/customers/infra/typeorm/entities/Customers";
 
 interface IProduct {
   product_id: string;

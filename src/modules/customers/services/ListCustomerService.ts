@@ -1,6 +1,6 @@
-import Customers from '@modules/customers/typeorm/entities/Customers';
+import Customers from '@modules/customers/infra/typeorm/entities/Customers';
 import { IPaginationMeta, Pagination, paginate } from 'nestjs-typeorm-paginate';
-import { CustomersRepository } from '../typeorm/repositories/CustomersRepository';
+import { CustomersRepository } from '../infra/typeorm/repositories/CustomersRepository';
 
 interface IPaginateCustomer {
   items: Customers[];

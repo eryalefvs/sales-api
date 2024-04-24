@@ -8,9 +8,9 @@ export const dataSource = new DataSource({
     "password": "docker",
     "database": "postgres",
     "entities": [
-      "src/modules/**/typeorm/entities/*.ts"
+      "src/modules/**/infra/typeorm/entities/*.ts"
     ],
     "migrations": [
-      "src/shared/typeorm/migrations/*.ts"
+      "src/shared/infra/typeorm/migrations/*.ts"
     ],
   })
