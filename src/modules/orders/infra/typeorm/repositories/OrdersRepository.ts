@@ -1,4 +1,4 @@
-import { dataSource } from "@shared/typeorm/index";
+import { dataSource } from "@shared/infra/typeorm/index";
 import Order from "../entities/Order";
 import Customers from "@modules/customers/infra/typeorm/entities/Customers";
 
