@@ -2,7 +2,7 @@ import { Column, CreateDateColumn, Entity, PrimaryGeneratedColumn } from "typeor
 import { ICustomer } from "@modules/customers/domain/models/ICustomer";
 
 @Entity("customers")
-export default class Customers implements ICustomer {
+class Customers implements ICustomer {
   @PrimaryGeneratedColumn("uuid")
   id: string;
 
@@ -18,3 +18,5 @@ export default class Customers implements ICustomer {
   @CreateDateColumn()
   updated_at: Date;
 }
+
+export default Customers

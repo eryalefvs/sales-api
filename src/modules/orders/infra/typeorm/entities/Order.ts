@@ -1,11 +1,15 @@
-import Customers from "@modules/customers/infra/typeorm/entities/Customers";
-import { CreateDateColumn, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+import { Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 import OrdersProducts from "./OrdersProducts";
+import { IOrder } from "@modules/orders/domain/models/IOrder";
+import Customers from "@modules/customers/infra/typeorm/entities/Customers";
 
 @Entity("orders")
-class Order {
+class Order implements IOrder {
   @PrimaryGeneratedColumn("uuid")
   id: string;
+
+  @Column("int")
+  order: number;
 
   @ManyToOne(() => Customers)
   @JoinColumn({ name: "customer_id" })
