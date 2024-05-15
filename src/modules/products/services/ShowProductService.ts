@@ -1,17 +1,19 @@
 import AppError from "@shared/errors/AppError";
-import { ProductRepository } from "../infra/typeorm/repositories/ProductRepository";
-import Product from "@modules/products/infra/typeorm/entities/Product"
+import { IShowProduct } from "../domain/models/IShowProduct";
+import { inject, injectable } from "tsyringe";
+import { IProductRepository } from "../domain/repositories/IProductRepository";
+import { IProduct } from "../domain/models/IProduct";
 
-interface IRequest {
-  id: string;
-}
-
+@injectable()
 class ShowProductService {
-  public async execute({ id }: IRequest): Promise<Product> {
+    constructor(
+    @inject("ProductsRepository")
+    private productsRepository: IProductRepository
+  ) {}
 
-    const product = await ProductRepository.findOne({
-      where: { id }
-    });
+  public async execute({ id }: IShowProduct): Promise<IProduct> {
+
+    const product = await this.productsRepository.findById(id);
 
     if(!product) {
       throw new AppError("Product not found.")

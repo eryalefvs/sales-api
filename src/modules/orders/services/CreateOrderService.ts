@@ -1,28 +1,32 @@
-import { CustomersRepository } from "@modules/customers/infra/typeorm/repositories/CustomersRepository";
-import { ProductRepository } from "@modules/products/infra/typeorm/repositories/ProductRepository";
 import AppError from "@shared/errors/AppError";
-import { OrdersRepository } from "../infra/typeorm/repositories/OrdersRepository";
-import Order from "../infra/typeorm/entities/Order";
+import { IOrderRepository } from "../domain/repositories/IOrderRepository";
+import { ICustomersRepository } from "@modules/customers/domain/repositories/ICustomersRepository";
+import { inject, injectable } from "tsyringe";
+import { IProductRepository } from "@modules/products/domain/repositories/IProductRepository";
+import { IRequestCreateOrder } from "../domain/models/IRequestCreateOrder";
+import { IOrder } from "../domain/models/IOrder";
 
-interface IProduct {
-  id: string;
-  quantity: number;
-}
-
-interface IRequest {
-  customer_id: string;
-  products: IProduct[];
-}
-
+@injectable()
 export default class CreateOrderService {
-  public async execute({ customer_id, products }: IRequest): Promise<Order> {
-    const customerExists = await CustomersRepository.findById(customer_id);
+    constructor(
+    @inject("CustomersRepository")
+    private customersRepository: ICustomersRepository,
+
+    @inject("ProductsRepository")
+    private productsRepository: IProductRepository,
+
+    @inject("OrdersRepository")
+    private ordersRepository: IOrderRepository
+  ) {}
+
+  public async execute({ customer_id, products }: IRequestCreateOrder): Promise<IOrder> {
+    const customerExists = await this.customersRepository.findById(customer_id);
 
     if(!customerExists) {
       throw new AppError("Could not find any customer with the given id.");
     }
 
-    const productExists = await ProductRepository.findAllByIds(products);
+    const productExists = await this.productsRepository.findAllByIds(products);
 
     if(!productExists.length) {
       throw new AppError("Could not find any products with the given ids.");
@@ -55,8 +59,8 @@ export default class CreateOrderService {
     })
   )
 
-  const order = await OrdersRepository.createOrder({
-    customer: customerExists,
+  const order = await this.ordersRepository.createOrder({
+    customer_id: customerExists,
     products: serializedProducts,
   })
 
@@ -69,7 +73,7 @@ export default class CreateOrderService {
     })
   )
 
-  await ProductRepository.save(updatedProductQuantity);
+  await this.productsRepository.updateStock(updatedProductQuantity);
 
   return order;
 }

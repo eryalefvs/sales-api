@@ -1,23 +1,33 @@
-import Customers from '@modules/customers/infra/typeorm/entities/Customers';
-import { IPaginationMeta, Pagination, paginate } from 'nestjs-typeorm-paginate';
-import { CustomersRepository } from '../infra/typeorm/repositories/CustomersRepository';
+import { inject, injectable } from 'tsyringe';
+import { ICustomersRepository } from '../domain/repositories/ICustomersRepository';
+import { ICustomerPaginate } from '../domain/models/ICustomerPaginate';
 
-interface IPaginateCustomer {
-  items: Customers[];
-  meta: {
-    totalItems: number;
-    itemCount: number;
-    itemsPerPage: number;
-    totalPages: number;
-    currentPage: number;
-  }
+interface SearchParams {
+  page: number;
+  limit: number;
 }
 
-export default class ListCustomerService {
-  async execute(page: number, limit: number): Promise<Pagination<Customers, IPaginationMeta>> {
-    const queryBuilder = CustomersRepository.createQueryBuilder('customer');
-    const customers = await paginate(queryBuilder, { page, limit });
+@injectable()
+class ListCustomerService {
+  constructor(
+    @inject('CustomersRepository')
+    private customersRepository: ICustomersRepository,
+  ) {}
+
+  public async execute({
+    page,
+    limit,
+  }: SearchParams): Promise<ICustomerPaginate> {
+    const take = limit;
+    const skip = (Number(page) - 1) * take;
+    const customers = await this.customersRepository.findAll({
+      page,
+      skip,
+      take,
+    });
 
     return customers;
   }
 }
+
+export default ListCustomerService;
