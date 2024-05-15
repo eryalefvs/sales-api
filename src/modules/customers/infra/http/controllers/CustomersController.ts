@@ -4,20 +4,23 @@ import ShowCustomerService from "../../../services/ShowCustomerService";
 import CreateCustomerService from "../../../services/CreateCustomerService";
 import UpdateCustomerService from "../../../services/UpdateCustomerService";
 import DeleteCustomerService from "../../../services/DeleteCustomerService";
-import { CustomersRepository } from "../../typeorm/repositories/CustomersRepository";
+import { container } from "tsyringe";
 
 export default class CustomersController {
   public async index(request: Request, response: Response) {
-    const listCustomer = new ListCustomerService();
+    const page = request.query.page ? Number(request.query.page) : 1;
+    const limit = request.query.limit ? Number(request.query.limit) : 15;
 
-    const customers = await listCustomer.execute(1, 15);
+    const listCustomers = container.resolve(ListCustomerService);
+    const customers = await listCustomers.execute({ page, limit });
 
-    response.json(customers);
+    return response.json(customers);
   }
+
   public async show(request: Request, response: Response) {
     const { id } = request.params;
 
-    const showCustomer = new ShowCustomerService();
+    const showCustomer = container.resolve(ShowCustomerService);
 
     const customer = await showCustomer.execute({id});
 
@@ -27,9 +30,7 @@ export default class CustomersController {
   public async create(request: Request, response: Response) {
     const { name, email } = request.body;
 
-    const customersRepository = CustomersRepository;
-
-    const createCustomer = new CreateCustomerService(customersRepository);
+    const createCustomer = container.resolve(CreateCustomerService);
 
     const customer = await createCustomer.execute({ name, email });
 
@@ -40,16 +41,17 @@ export default class CustomersController {
     const { id } = request.params;
     const { name, email } = request.body;
 
-    const updateCustomer = new UpdateCustomerService();
+    const updateCustomer = container.resolve(UpdateCustomerService);
 
     const customer = await updateCustomer.execute({ id, name, email });
 
     response.json(customer);
   }
+
   public async delete(request: Request, response: Response) {
     const { id } = request.params;
 
-    const deleteCustomer = new DeleteCustomerService();
+    const deleteCustomer = container.resolve(DeleteCustomerService);
 
     await deleteCustomer.execute({ id });
 
